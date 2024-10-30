@@ -6,6 +6,8 @@ import com.example.demo.mapper.CustomerMapper;
 import com.example.demo.repository.CustomerRepository;
 import com.example.demo.service.CustomerService;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,11 +16,14 @@ import java.util.List;
 @AllArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
     private CustomerRepository customerRepository;
+    private static final Logger logger = LoggerFactory.getLogger(CustomerServiceImpl.class);
 
     @Override
     public CustomerDto createCustomer(CustomerDto customerDto) {
+        logger.info("Creating customer: {}", customerDto.getEmailAddress());
         Customer customer = CustomerMapper.mapToCustomer(customerDto);
         Customer savedCustomer = customerRepository.save(customer);
+        logger.info("Customer created successfully with ID: {}", savedCustomer.getId());
         return CustomerMapper.mapToCustomerDto(savedCustomer);
     }
 
