@@ -1,10 +1,39 @@
 services:
   mysql:
-    image: 'mysql:latest'
+    container_name: db-container
+    image: mysql:8.0
     environment:
-      - 'MYSQL_DATABASE=mydatabase'
-      - 'MYSQL_PASSWORD=secret'
-      - 'MYSQL_ROOT_PASSWORD=verysecret'
-      - 'MYSQL_USER=myuser'
+      - MYSQL_DATABASE=mydatabase
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=verysecret
+      - MYSQL_USER=myuser
     ports:
-      - '3306'
+      - 3306:3306
+    networks:
+      - demonet
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  api:
+    container_name: api-container
+    ports:
+      - "8080:8080"
+    build:
+      dockerfile: ./Dockerfile
+      context: ./
+    environment:
+      - DB_HOST=mysql
+      - DB_NAME=mydatabase
+      - DB_PORT=3306
+      - DB_USER=myuser
+      - DB_PASSWORD=secret
+    networks:
+      - demonet
+    depends_on:
+      - mysql
+networks:
+  demonet:
+    driver: bridge
+volumes:
+  mysql-data:
+    driver: local
